@@ -33,6 +33,7 @@ from .ingest import (
 )
 from .models import BrowserCapture
 from .packs import build_pack
+from .public_sync import public_status, publish_public
 
 
 @asynccontextmanager
@@ -79,6 +80,11 @@ class ImportRequest(BaseModel):
     path: str
 
 
+class PublicPublishRequest(BaseModel):
+    conversation_ids: list[str]
+    accept_redactions: bool = False
+
+
 def require_capture_token(
     x_ai_context_token: str | None = Header(default=None),
 ) -> None:
@@ -97,6 +103,7 @@ def status() -> dict[str, Any]:
         "ok": True,
         "counts": count_conversations(),
         "git": config,
+        "public_repo": public_status(),
         "recent_syncs": recent_sync_runs(5),
         "server_time": utc_now(),
     }
@@ -209,6 +216,19 @@ def create_pack(request: PackRequest) -> dict[str, Any]:
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/api/v1/publish/public")
+def publish_public_conversations(request: PublicPublishRequest) -> dict[str, Any]:
+    try:
+        return publish_public(
+            request.conversation_ids,
+            accept_redactions=request.accept_redactions,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.get("/api/v1/packs/{filename}")

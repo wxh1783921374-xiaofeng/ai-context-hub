@@ -51,6 +51,10 @@
             />
           </div>
           <div class="list-toolbar">
+            <label class="bulk-control">
+              <input id="select-all" type="checkbox" />
+              <span>全选当前列表</span>
+            </label>
             <span id="thread-count">0 个会话</span>
             <button id="clear-selection" class="text-button" type="button" hidden>
               清除选择
@@ -107,6 +111,9 @@
         </label>
         <button id="create-pack" class="button button-secondary" type="button">
           生成 Context Pack
+        </button>
+        <button id="publish-public" class="button button-public" type="button" disabled>
+          发布选中到公开项目
         </button>
         <a id="download-pack" class="button button-primary" hidden>下载</a>
       </section>

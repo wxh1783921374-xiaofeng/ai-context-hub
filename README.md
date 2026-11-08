@@ -27,6 +27,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
 - 按 `brief`、`working`、`full` 三种模式生成有 token 上限的 Context Pack。
 - 在发布前扫描 API Key、令牌、Cookie、私钥、邮箱、手机号、本地路径等敏感信息。
 - 把脱敏导出提交到私有 GitHub。
+- 把明确勾选的脱敏会话单独发布到公开 GitHub 仓库。
 
 ## 安装
 
@@ -101,6 +102,9 @@ ai-context pack --threads "codex:会话ID" "gemini:会话ID"
 
 # 发布到你自己的私有仓库前，先配置 github_repo
 ai-context sync --codex --accept-redactions --publish
+
+# 只把选中的会话发布到公开仓库
+ai-context publish-public --threads "chatgpt:会话ID" "deepseek:会话ID"
 ```
 
 ## 数据流

@@ -311,6 +311,17 @@ select:focus-visible {
   font-size: 12px;
 }
 
+.bulk-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.bulk-control input {
+  accent-color: var(--teal);
+}
+
 .thread-list {
   display: grid;
 }
@@ -589,6 +600,15 @@ select:focus-visible {
 
 .button-secondary:hover:not(:disabled) {
   background: #c8dfd7;
+}
+
+.button-public {
+  color: #fff;
+  background: var(--rust);
+}
+
+.button-public:hover:not(:disabled) {
+  background: #81342f;
 }
 
 .icon-button {

@@ -22,6 +22,7 @@ Use the local hub for cross-provider conversation search and context extraction.
 - Build from selected IDs: `ai-context pack --threads "<id>" "<id>" --budget 32000 --mode working`.
 - Build from a topic: `ai-context pack --query "<query>" --budget 32000 --mode working`.
 - Refresh Codex, DeepSeek Harness, and exports: `ai-context sync --codex --deepseek-harness`.
+- Publish explicitly selected conversations: `ai-context publish-public --threads "<id>" "<id>"`.
 
 Use `working` by default. Use `brief` only when the user wants maximum compression; use `full` only when they explicitly need the complete stored process.
 
@@ -33,6 +34,7 @@ A local export is reversible. Creating a GitHub repository, committing, or pushi
 - Treat `status: blocked` as a stop condition until the user reviews the redacted samples.
 - Push only when the user explicitly asks to publish. Use `--accept-redactions --publish` only after they approve the redacted result.
 - Report the repository, branch, and short commit hash after publishing.
+- Public publishing is more sensitive than the private export. Publish only the exact conversation IDs the user selected, state that the destination is public, and never publish all conversations unless the user explicitly asks for all of them.
 
 ## Provenance
 

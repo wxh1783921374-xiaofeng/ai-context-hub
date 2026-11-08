@@ -24,6 +24,7 @@ const elements = {
   providerList: document.querySelector("#provider-list"),
   threadList: document.querySelector("#thread-list"),
   threadCount: document.querySelector("#thread-count"),
+  selectAll: document.querySelector("#select-all"),
   search: document.querySelector("#search"),
   refresh: document.querySelector("#refresh"),
   syncState: document.querySelector("#sync-state"),
@@ -38,6 +39,7 @@ const elements = {
   selectionCount: document.querySelector("#selection-count"),
   clearSelection: document.querySelector("#clear-selection"),
   createPack: document.querySelector("#create-pack"),
+  publishPublic: document.querySelector("#publish-public"),
   packMode: document.querySelector("#pack-mode"),
   packBudget: document.querySelector("#pack-budget"),
   downloadPack: document.querySelector("#download-pack"),
@@ -143,6 +145,7 @@ function renderList() {
     empty.style.fontSize = "13px";
     empty.textContent = "没有匹配的会话。先导入或同步一个来源。";
     elements.threadList.append(empty);
+    updateSelectAllState();
     return;
   }
   for (const item of state.conversations) {
@@ -191,6 +194,15 @@ function renderList() {
     });
     elements.threadList.append(row);
   }
+  updateSelectAllState();
+}
+
+function updateSelectAllState() {
+  const total = state.conversations.length;
+  const selected = state.conversations.filter((item) => state.selected.has(item.id)).length;
+  elements.selectAll.disabled = total === 0;
+  elements.selectAll.checked = total > 0 && selected === total;
+  elements.selectAll.indeterminate = selected > 0 && selected < total;
 }
 
 function renderMessageBody(container, text) {
@@ -279,11 +291,12 @@ async function loadStatus() {
     const counts = status.counts;
     renderProviders(counts);
     const git = status.git;
+    const publicRepo = status.public_repo;
     const remote = git.remote ? "已连接私有远端" : "未连接 GitHub";
     elements.syncState.textContent = `${counts.all || 0} 个会话 · ${remote}`;
     elements.gitSummary.textContent = git.remote
-      ? `分支 ${git.branch || "未命名"}，待发布变更 ${git.change_count || 0} 项。`
-      : "尚未配置 GitHub 远端；本地导入与 Context Pack 仍可使用。";
+      ? `私有库分支 ${git.branch || "未命名"}，待发布 ${git.change_count || 0} 项。公开项目：${publicRepo?.url || "未配置"}`
+      : `尚未配置私有 GitHub 远端；公开项目：${publicRepo?.url || "未配置"}`;
   } catch (error) {
     elements.syncState.textContent = "本地服务连接失败";
     toast(`状态读取失败：${error.message}`, true);
@@ -297,6 +310,7 @@ function updateSelectionUi() {
     : "尚未选择会话";
   elements.clearSelection.hidden = count === 0;
   elements.createPack.disabled = count === 0;
+  elements.publishPublic.disabled = count === 0;
   if (state.current) {
     elements.selectCurrent.checked = state.selected.has(state.current.id);
   }
@@ -434,6 +448,54 @@ async function createPack() {
   }
 }
 
+async function publishToPublic() {
+  if (!state.selected.size) return;
+  const preview = await api("/api/v1/status");
+  const target = preview.public_repo?.url || "公开 GitHub 项目";
+  if (
+    !window.confirm(
+      `将把 ${state.selected.size} 个已脱敏会话发布到公开项目：\n${target}\n\n公开后任何人都能看到这些内容，是否继续？`,
+    )
+  ) {
+    return;
+  }
+  elements.publishPublic.disabled = true;
+  elements.publishPublic.textContent = "正在发布…";
+  try {
+    let result = await api("/api/v1/publish/public", {
+      method: "POST",
+      body: JSON.stringify({
+        conversation_ids: [...state.selected],
+        accept_redactions: false,
+      }),
+    });
+    if (result.status === "blocked") {
+      const proceed = window.confirm(
+        "检测到高风险敏感内容。继续会先替换为脱敏占位符再公开，是否继续？",
+      );
+      if (!proceed) return;
+      result = await api("/api/v1/publish/public", {
+        method: "POST",
+        body: JSON.stringify({
+          conversation_ids: [...state.selected],
+          accept_redactions: true,
+        }),
+      });
+    }
+    toast(
+      result.status === "unchanged"
+        ? "公开项目内容已是最新。"
+        : `已发布 ${result.published || 0} 个会话到公开项目。`,
+    );
+    if (result.url) window.open(result.url, "_blank", "noopener");
+  } catch (error) {
+    toast(`公开同步失败：${error.message}`, true);
+  } finally {
+    elements.publishPublic.disabled = state.selected.size === 0;
+    elements.publishPublic.textContent = "发布选中到公开项目";
+  }
+}
+
 let searchTimer;
 elements.search.addEventListener("input", () => {
   clearTimeout(searchTimer);
@@ -441,6 +503,14 @@ elements.search.addEventListener("input", () => {
     state.query = elements.search.value.trim();
     loadConversations();
   }, 260);
+});
+elements.selectAll.addEventListener("change", () => {
+  if (elements.selectAll.checked) {
+    for (const item of state.conversations) state.selected.add(item.id);
+  } else {
+    for (const item of state.conversations) state.selected.delete(item.id);
+  }
+  updateSelectionUi();
 });
 elements.refresh.addEventListener("click", () => {
   Promise.all([loadConversations(), loadStatus()]);
@@ -471,6 +541,7 @@ elements.clearSelection.addEventListener("click", () => {
   updateSelectionUi();
 });
 elements.createPack.addEventListener("click", createPack);
+elements.publishPublic.addEventListener("click", publishToPublic);
 
 Promise.all([loadStatus(), loadConversations()]).then(() => {
   updateSelectionUi();

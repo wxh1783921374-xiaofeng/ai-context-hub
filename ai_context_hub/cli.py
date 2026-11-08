@@ -26,6 +26,7 @@ from .exporter import export_all
 from .github_sync import ensure_private_repository, git_status, publish_exports
 from .ingest import ingest_chatgpt, ingest_codex, ingest_deepseek_harness, ingest_generic
 from .packs import build_pack
+from .public_sync import publish_public, public_status
 
 
 def _print(value: Any) -> None:
@@ -82,6 +83,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     repo = subparsers.add_parser("ensure-repo", help="Create or connect the private repo.")
     repo.add_argument("--repo", default=None)
+
+    public = subparsers.add_parser(
+        "publish-public",
+        help="Publish selected sanitized conversations to the public repository.",
+    )
+    public.add_argument("--threads", nargs="+", required=True)
+    public.add_argument("--accept-redactions", action="store_true")
+    subparsers.add_parser("public-status", help="Show the public repository target.")
     return parser
 
 
@@ -201,6 +210,15 @@ def main(argv: list[str] | None = None) -> None:
         config = load_config()
         repo = args.repo or config["github_repo"]
         _print(ensure_private_repository(repo))
+    elif args.command == "publish-public":
+        _print(
+            publish_public(
+                args.threads,
+                accept_redactions=args.accept_redactions,
+            )
+        )
+    elif args.command == "public-status":
+        _print(public_status())
     else:
         raise SystemExit(f"未知命令: {args.command}")
 
