@@ -1,0 +1,16 @@
+{
+  "format": "ai-context-hub-public/v1",
+  "generated_at": "2026-11-08T14:59:45+00:00",
+  "repository": "wxh1783921374-xiaofeng/ai-context-hub",
+  "conversation_count": 1,
+  "redactions": {},
+  "conversations": [
+    {
+      "id": "chatgpt:6aa3b2e6-a5a4-83ea-9b13-41e04866704b",
+      "provider": "chatgpt",
+      "provider_name": "ChatGPT",
+      "title": "数据结构与算法",
+      "path": "shared-context/chatgpt/数据结构与算法-f37f6408.md"
+    }
+  ]
+}
