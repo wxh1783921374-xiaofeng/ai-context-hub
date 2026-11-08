@@ -437,7 +437,9 @@ async function createPack() {
       return;
     }
     state.packPath = result.path;
-    elements.downloadPack.href = `/api/v1/packs/${encodeURIComponent(result.path.split("/").pop())}`;
+    const filename = result.filename || result.path.split(/[\\/]/).pop();
+    elements.downloadPack.href =
+      result.download_url || `/api/v1/packs/${encodeURIComponent(filename)}`;
     elements.downloadPack.hidden = false;
     toast(`Context Pack 已生成，约 ${result.token_count} tokens。`);
   } catch (error) {

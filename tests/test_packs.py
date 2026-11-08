@@ -49,6 +49,9 @@ def test_pack_has_conversation_level_sources_and_budget(hub_home) -> None:
     )
 
     assert result["status"] == "ok"
+    assert result["filename"].endswith(".md")
+    assert "/" not in result["filename"]
+    assert result["download_url"].startswith("/api/v1/packs/")
     path = Path(hub_home) / result["path"]
     content = path.read_text(encoding="utf-8")
     assert 'source="Codex"' in content

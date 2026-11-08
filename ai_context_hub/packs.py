@@ -6,6 +6,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable
+from urllib.parse import quote
 
 import tiktoken
 
@@ -184,6 +185,8 @@ def build_pack(
         "status": "ok",
         "path": str(target.relative_to(paths.root)),
         "manifest_path": str(manifest_path.relative_to(paths.root)),
+        "filename": target.name,
+        "download_url": f"/api/v1/packs/{quote(target.name)}",
         "token_count": count_tokens(content),
         "included": included,
         "excluded": excluded,
