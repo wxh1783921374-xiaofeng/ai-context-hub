@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Context Hub 扩展设置</title>
+    <style>
+      :root {
+        color: #152526;
+        background: #eef2ef;
+        font-family: "Microsoft YaHei UI", "Aptos", sans-serif;
+      }
+      body {
+        max-width: 620px;
+        margin: 48px auto;
+        padding: 0 20px;
+      }
+      h1 {
+        font-size: 28px;
+      }
+      p {
+        color: #667675;
+        line-height: 1.7;
+      }
+      label {
+        display: grid;
+        gap: 7px;
+        margin: 18px 0;
+        font-size: 13px;
+        font-weight: 650;
+      }
+      input {
+        padding: 10px;
+        border: 1px solid #cbd7d2;
+        border-radius: 6px;
+        font: inherit;
+      }
+      button {
+        padding: 9px 15px;
+        border: 0;
+        border-radius: 6px;
+        color: white;
+        background: #116a68;
+        font: inherit;
+        font-weight: 650;
+        cursor: pointer;
+      }
+      code {
+        padding: 2px 5px;
+        border-radius: 3px;
+        background: #dfe7e3;
+        font-family: "Cascadia Mono", Consolas, monospace;
+      }
+      #status {
+        margin-left: 12px;
+        color: #116a68;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>连接本地中枢</h1>
+    <p>
+      扩展只向本机发送你主动捕获的页面内容，不读取 Cookie、密码或站点内部 API。
+      配对令牌可从项目目录运行 <code>.\.venv\Scripts\ai-context.exe token</code> 获取。
+    </p>
+    <label>
+      本地服务地址
+      <input id="server" type="url" value="http://127.0.0.1:8765" />
+    </label>
+    <label>
+      配对令牌
+      <input id="token" type="password" autocomplete="off" />
+    </label>
+    <button id="save" type="button">保存设置</button>
+    <span id="status"></span>
+    <script src="config.local.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+interface:
+  display_name: "AI 会话中枢"
+  short_description: "搜索、汇总并导出多个 AI 与 DeepSeek Harness 的会话为可追溯上下文包。Search and export multi-AI and DeepSeek Harness conversations as provenance-rich context packs."
+  default_prompt: "Use $ai-context-hub to find the relevant AI conversations and build a source-labelled context pack."
+
+policy:
+  allow_implicit_invocation: true

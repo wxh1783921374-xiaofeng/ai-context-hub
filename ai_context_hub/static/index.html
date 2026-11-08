@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>AI 会话中枢</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="masthead">
+        <a class="brand" href="/" aria-label="AI 会话中枢首页">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <span>
+            <strong>AI 会话中枢</strong>
+            <small>Context Relay</small>
+          </span>
+        </a>
+        <div class="masthead-actions">
+          <span id="sync-state" class="status-chip">正在读取本地索引…</span>
+          <button id="open-sync" class="button button-primary" type="button">
+            立即同步
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="source-rail" aria-label="AI 来源">
+          <div class="rail-heading">
+            <span>来源</span>
+            <button id="refresh" class="icon-button" type="button" title="刷新">↻</button>
+          </div>
+          <nav id="provider-list" class="provider-list"></nav>
+          <div class="rail-note">
+            <span class="pulse-dot"></span>
+            <p>完整原文保存在本机。GitHub 只接收脱敏导出。</p>
+          </div>
+        </aside>
+
+        <section class="thread-pane" aria-label="会话列表">
+          <div class="search-block">
+            <label for="search">搜索会话与消息</label>
+            <input
+              id="search"
+              type="search"
+              autocomplete="off"
+              placeholder="标题、代码或任意文本…"
+            />
+          </div>
+          <div class="list-toolbar">
+            <span id="thread-count">0 个会话</span>
+            <button id="clear-selection" class="text-button" type="button" hidden>
+              清除选择
+            </button>
+          </div>
+          <div id="thread-list" class="thread-list" role="list"></div>
+        </section>
+
+        <section class="reader-pane" aria-label="会话内容">
+          <div id="empty-reader" class="empty-reader">
+            <div class="empty-signal" aria-hidden="true"></div>
+            <h1>把散落的对话收进一张工作台</h1>
+            <p>
+              从左侧选择一段会话。这里会显示来源、模型、时间、完整消息与可追溯链接。
+            </p>
+          </div>
+
+          <article id="reader" class="reader" hidden>
+            <header class="reader-header">
+              <div id="reader-source" class="source-stamp"></div>
+              <h1 id="reader-title"></h1>
+              <div id="reader-meta" class="reader-meta"></div>
+              <div class="reader-actions">
+                <label class="check-control">
+                  <input id="select-current" type="checkbox" />
+                  <span>加入上下文包</span>
+                </label>
+                <a id="source-link" class="text-button" target="_blank" rel="noreferrer">
+                  打开原始会话
+                </a>
+              </div>
+            </header>
+            <div id="messages" class="messages"></div>
+          </article>
+        </section>
+      </main>
+
+      <section id="pack-tray" class="pack-tray" aria-label="Context Pack">
+        <div class="pack-copy">
+          <strong id="selection-count">尚未选择会话</strong>
+          <span>合并成带来源标记、可限制 token 的上下文包。</span>
+        </div>
+        <label>
+          模式
+          <select id="pack-mode">
+            <option value="working" selected>工作上下文</option>
+            <option value="brief">精简</option>
+            <option value="full">完整</option>
+          </select>
+        </label>
+        <label>
+          预算
+          <input id="pack-budget" type="number" min="1000" max="1000000" value="32000" />
+        </label>
+        <button id="create-pack" class="button button-secondary" type="button">
+          生成 Context Pack
+        </button>
+        <a id="download-pack" class="button button-primary" hidden>下载</a>
+      </section>
+    </div>
+
+    <dialog id="sync-dialog" class="sync-dialog">
+      <form method="dialog" class="dialog-card">
+        <header>
+          <div>
+            <span class="dialog-kicker">手动批次</span>
+            <h2>同步与发布</h2>
+          </div>
+          <button class="icon-button" value="cancel" aria-label="关闭">×</button>
+        </header>
+
+        <div class="dialog-grid">
+          <section>
+            <h3>本机导入</h3>
+            <label class="check-control">
+              <input id="include-codex" type="checkbox" checked />
+              <span>重新扫描 Codex 本地会话</span>
+            </label>
+            <label class="check-control">
+              <input id="include-dsh" type="checkbox" checked />
+              <span>重新扫描 DeepSeek Harness 本地会话</span>
+            </label>
+            <label class="path-field">
+              <span>ChatGPT 官方导出 ZIP</span>
+              <input id="chatgpt-path" type="text" placeholder="D:\Downloads\chatgpt-export.zip" />
+            </label>
+            <button id="import-chatgpt" class="button button-secondary" type="button">
+              导入 ZIP
+            </button>
+            <p class="field-note">
+              DeepSeek、豆包和 Gemini 先在浏览器扩展里点击“发送到中枢”。
+            </p>
+          </section>
+          <section>
+            <h3>导出与远端</h3>
+            <label class="check-control">
+              <input id="publish-github" type="checkbox" />
+              <span>预检通过后提交并推送私有 GitHub</span>
+            </label>
+            <label class="check-control">
+              <input id="accept-redactions" type="checkbox" />
+              <span>允许发布已完成脱敏的高风险内容</span>
+            </label>
+            <p id="git-summary" class="field-note">尚未检查仓库状态。</p>
+          </section>
+        </div>
+
+        <div id="preview-panel" class="preview-panel" hidden></div>
+        <footer>
+          <button id="run-preview" class="button button-secondary" type="button">
+            预检
+          </button>
+          <button id="run-sync" class="button button-primary" type="button" disabled>
+            确认同步
+          </button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

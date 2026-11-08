@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Context Hub Capture</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <strong>会话捕获</strong>
+        <span id="provider-name">当前页面</span>
+      </div>
+      <button id="settings" class="quiet" title="设置">⚙</button>
+    </header>
+
+    <section class="primary-actions">
+      <button id="capture" class="primary">捕获当前会话</button>
+      <button id="send" class="secondary">发送到中枢</button>
+    </section>
+    <p id="pending" class="pending">正在读取扩展队列…</p>
+
+    <details id="history-panel">
+      <summary>导入历史会话</summary>
+      <p>只枚举当前页面已经加载的侧栏会话；勾选后逐个打开并捕获。</p>
+      <div id="history-list" class="history-list"></div>
+      <button id="import-history" class="secondary" disabled>导入所选历史</button>
+    </details>
+
+    <p id="message" class="message" role="status"></p>
+    <script src="popup.js"></script>
+  </body>
+</html>

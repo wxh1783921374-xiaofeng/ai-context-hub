@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-context-hub"
+version = "0.1.0"
+description = "Local-first AI conversation hub for Codex, ChatGPT, Gemini, DeepSeek, DeepSeek Harness, and Doubao."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "AI Context Hub contributors" }]
+keywords = ["ai", "chatgpt", "codex", "gemini", "deepseek", "context"]
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.30,<1",
+  "pydantic>=2.8,<3",
+  "tiktoken>=0.8,<1",
+  "tzdata>=2024.1",
+  "zstandard>=0.23,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.27,<1",
+  "pytest>=8.3,<9",
+]
+
+[project.scripts]
+ai-context = "ai_context_hub.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ai_context_hub*"]
+
+[tool.setuptools.package-data]
+ai_context_hub = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --basetemp=.pytest-tmp"
