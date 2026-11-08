@@ -9,7 +9,7 @@
 ## 快速开始
 
 ```powershell
-git clone <this-repository-url>
+git clone https://github.com/wxh1783921374-xiaofeng/ai-context-hub.git
 Set-Location .\ai-context-hub
 powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1

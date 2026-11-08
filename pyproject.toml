@@ -21,6 +21,11 @@ dependencies = [
   "zstandard>=0.23,<1",
 ]
 
+[project.urls]
+Homepage = "https://github.com/wxh1783921374-xiaofeng/ai-context-hub"
+Repository = "https://github.com/wxh1783921374-xiaofeng/ai-context-hub"
+Issues = "https://github.com/wxh1783921374-xiaofeng/ai-context-hub/issues"
+
 [project.optional-dependencies]
 dev = [
   "httpx>=0.27,<1",
